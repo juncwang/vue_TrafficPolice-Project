@@ -1,13 +1,18 @@
 <template>
   <div id="index">
     <div id="container" tabindex="0"></div>
+    <login></login>
   </div>
 </template>
 
 <script>
 import AMap from "AMap";
+import Login from "../components/Login";
 export default {
   name: "index",
+  components: {
+    'login': Login
+  },
   data() {
     return {
       amap: {
