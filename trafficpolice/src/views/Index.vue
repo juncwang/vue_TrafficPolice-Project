@@ -1,21 +1,32 @@
 <template>
   <div id="index">
     <div id="container" tabindex="0"></div>
-    <login v-if="statusPage[statusIndex] == 'login'" @loginFinal='loginFinal($event)'></login>
+    <login v-if="statusPage[statusIndex] == 'login'" @loginFinal="loginFinal($event)"></login>
+    <template v-else-if="statusPage[statusIndex] == 'features'">
+      <weather :district="amap.area.district"></weather>
+      <selectStatus></selectStatus>
+      <menuSelect></menuSelect>
+    </template>
   </div>
 </template>
 
 <script>
 import AMap from "AMap";
 import Login from "../components/Login";
+import Weather from "../components/Weather";
+import SelectStatus from "../components/SelectStatus";
+import MenuSelect from "../components/MenuSelect";
 export default {
   name: "index",
   components: {
-    'login': Login
+    login: Login,
+    weather: Weather,
+    selectStatus: SelectStatus,
+    menuSelect: MenuSelect
   },
   data() {
     return {
-      statusPage: ['login', 'features'],
+      statusPage: ["login", "features"],
       statusIndex: 0,
       amap: {
         id: "container",
@@ -41,17 +52,16 @@ export default {
   },
   mounted() {
     this.initMap();
-    if(this.$store.state.getLoginStatus){
-      this.statusIndex = 1
-    }else{
-      this.statusIndex = 0
+    if (this.$store.state.isLogin) {
+      this.statusIndex = 1;
+    } else {
+      this.statusIndex = 0;
     }
-    
   },
   methods: {
-    loginFinal(statusIndex){
-      this.statusIndex = statusIndex
-      this.$store.commit('setLoginStatus', true)
+    loginFinal(statusIndex) {
+      this.statusIndex = statusIndex;
+      this.$store.commit("setLoginStatus", true);
     },
     initMap: function() {
       let map = new AMap.Map(this.amap.id, {
