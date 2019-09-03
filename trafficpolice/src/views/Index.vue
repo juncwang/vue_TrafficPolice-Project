@@ -1,7 +1,7 @@
 <template>
   <div id="index">
     <div id="container" tabindex="0"></div>
-    <login></login>
+    <login v-if="statusPage[statusIndex] == 'login'" @loginFinal='loginFinal($event)'></login>
   </div>
 </template>
 
@@ -15,6 +15,8 @@ export default {
   },
   data() {
     return {
+      statusPage: ['login', 'features'],
+      statusIndex: 0,
       amap: {
         id: "container",
         center: [106.510676, 29.502272],
@@ -39,8 +41,18 @@ export default {
   },
   mounted() {
     this.initMap();
+    if(this.$store.state.getLoginStatus){
+      this.statusIndex = 1
+    }else{
+      this.statusIndex = 0
+    }
+    
   },
   methods: {
+    loginFinal(statusIndex){
+      this.statusIndex = statusIndex
+      this.$store.commit('setLoginStatus', true)
+    },
     initMap: function() {
       let map = new AMap.Map(this.amap.id, {
         center: this.amap.center,
