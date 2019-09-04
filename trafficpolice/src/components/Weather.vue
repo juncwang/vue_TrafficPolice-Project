@@ -19,6 +19,9 @@
             <li>
                 <div v-text="wind"></div>
             </li>
+            <li>
+                <div v-text="weather"></div>
+            </li>
         </ul>
     </div>
 </template>
@@ -33,6 +36,7 @@ export default {
             temperature: '',
             humidity: '',
             wind: '',
+            weather: '',
         }
     },
     props: ['district'],
@@ -41,15 +45,16 @@ export default {
             let weather = new AMap.Weather()
             weather.getLive(this.district, (err, data) => {
                 if(!err){
-                    console.log(data)
+                    // console.log(data)
                     this.temperature = data.temperature + '℃'
                     this.humidity = '湿度 ' + data.humidity + '%'
                     this.wind = data.windDirection + '风 ' + data.windPower + '级'
+                    this.weather = data.weather
                     if(data.temperature > 35){
                         this.$refs.temImg.style.top = '0px'
                     }else if(data.temperature > 25){
                         this.$refs.temImg.style.top = '-73px'
-                    }else if(data.temperature > 15){
+                    }else if(data.temperature > 10){
                         this.$refs.temImg.style.top = '-146px'
                     }else{
                         this.$refs.temImg.style.top = '-219px'
@@ -89,7 +94,7 @@ export default {
     height: 100%;
     display: flex;
     flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: space-evenly;
 }
 
 .weatherList li {
@@ -107,7 +112,7 @@ export default {
 }
 
 .weatherList>li:nth-child(1) {
-    width: 100px;
+    width: 110px;
     background-image: url('../assets/Weather_temperature.png');
 }
 
@@ -122,6 +127,10 @@ export default {
 
 .weatherList>li:nth-child(4) {
     background-image: url('../assets/Weather_wind.png');
+}
+
+.weatherList>li:nth-child(5) {
+    background-image: url('../assets/Weather_weather.png');
 }
 
 .weatherList>li>ul {

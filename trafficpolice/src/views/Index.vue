@@ -5,13 +5,14 @@
     <template v-else-if="statusPage[statusIndex] == 'features'">
       <weather :district="amap.area.district"></weather>
       <selectStatus></selectStatus>
-      <menuSelect></menuSelect>
+      <menuSelect @Logout="Logout($event)"></menuSelect>
     </template>
   </div>
 </template>
 
 <script>
 import AMap from "AMap";
+import AMapUI from "AMapUI";
 import Login from "../components/Login";
 import Weather from "../components/Weather";
 import SelectStatus from "../components/SelectStatus";
@@ -32,7 +33,7 @@ export default {
         id: "container",
         center: [106.510676, 29.502272],
         resizeEnable: true,
-        zoom: 16,
+        zoom: 14,
         lang: "zh",
         pitch: 45,
         viewMode: "3D",
@@ -40,14 +41,15 @@ export default {
         features: ["road", "point"],
         area: {
           district: "九龙坡区",
-          fillOpacity: 0.4,
-          fillColor: "#80d8ff",
-          strokeWeight: 1,
-          strokeColor: "#0091ea"
+          fillOpacity: 0.1,
+          fillColor: "#fff",
+          strokeWeight: 5,
+          strokeColor: "#fff"
         },
         rotSpeed: 0.05,
         bRot: true
-      }
+      },
+      map: null
     };
   },
   mounted() {
@@ -63,7 +65,14 @@ export default {
       this.statusIndex = statusIndex;
       this.$store.commit("setLoginStatus", true);
     },
+    Logout(statusIndex) {
+      console.log(statusIndex);
+      this.statusIndex = statusIndex;
+
+      this.$store.commit("setLoginStatus", false);
+    },
     initMap: function() {
+      // 加载地图
       let map = new AMap.Map(this.amap.id, {
         center: this.amap.center,
         resizeEnable: this.amap.resizeEnable,
@@ -74,6 +83,7 @@ export default {
       map.setMapStyle(this.amap.mapStyle);
       map.setFeatures(this.amap.features);
 
+      // 在地图上为规定区域描边
       let district = null;
       let polygons = [];
 
@@ -101,8 +111,53 @@ export default {
           }
         }
         map.add(polygons);
-        map.setFitView(polygons); //视口自适应
+        // map.setFitView(polygons); //视口自适应
       });
+
+      // 在地图上显示路况信息
+      // AMapUI.loadUI(["control/BasicControl"], function(BasicControl) {
+      //   var traffic = new BasicControl.Traffic({
+      //     showButton: false,
+      //     theme: "normal"
+      //   });
+
+      //   console.log(traffic)
+
+      //   map.addControl(traffic);
+      // });
+
+      // 在地图上标注图标
+      AMapUI.loadUI(["overlay/SimpleMarker"], function(SimpleMarker) {
+        let lngLats = [106.510676, 29.502272];
+
+        let marker = new SimpleMarker({
+          iconLabel: "",
+          //自定义图标地址
+          iconStyle: "/images/icon_car.png",
+          offset: new AMap.Pixel(-30, -62),
+          map: map,
+          position: lngLats,
+          zIndex: 100
+        });
+        AMap.event.addListener(marker, "click", function() {
+          console.log(lngLats);
+        });
+      });
+      // AMapUI.loadUI(["overlay/SimpleInfoWindow"], function() {
+      //   let lngLats = [106.510676, 29.502272]
+      //   let marker = new AMap.Marker({
+      //     map: map,
+      //     zIndex: 9999999,
+      //     iconStyle: '/images/icon_car.png',
+      //     position: lngLats
+      //   });
+
+      //   AMap.event.addListener(marker, "click", function() {
+      //     console.log(lngLats);
+      //   });
+      // });
+
+      this.map = map;
 
       setInterval(() => {
         if (this.amap.bRot) {
@@ -114,7 +169,8 @@ export default {
       let yaw = map.getRotation() + this.amap.rotSpeed;
       if (yaw >= 360) yaw = 0;
       map.setRotation(yaw);
-    }
+    },
+    runtime: function() {}
   }
 };
 </script>
