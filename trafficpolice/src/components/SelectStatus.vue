@@ -21,10 +21,12 @@ export default {
         selectTra(){
             this.$refs.selectColor.style.left = '0px'
             this.isSelect = true
+            this.$emit('setStatus', this.isSelect)
         },
         selectPol(){
             this.$refs.selectColor.style.left = '230px'
             this.isSelect = false
+            this.$emit('setStatus', this.isSelect)
         }
     }
 }

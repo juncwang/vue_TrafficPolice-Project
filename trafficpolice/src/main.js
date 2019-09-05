@@ -7,7 +7,7 @@ import store from './store'
 // 引入 axios.js 
 import axios from './axios'
 
-axios.defaults.baseURL = process.env.VUE_APP_BASEURL
+// axios.defaults.baseURL = process.env.VUE_APP_BASEURL
 axios.defaults.timeout = 5000
 
 Vue.config.productionTip = false

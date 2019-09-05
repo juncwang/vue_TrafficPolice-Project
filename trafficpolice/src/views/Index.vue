@@ -4,7 +4,7 @@
     <login v-if="statusPage[statusIndex] == 'login'" @loginFinal="loginFinal($event)"></login>
     <template v-else-if="statusPage[statusIndex] == 'features'">
       <weather :district="amap.area.district"></weather>
-      <selectStatus></selectStatus>
+      <selectStatus @setStatus="setStatus($event)"></selectStatus>
       <menuSelect @Logout="Logout($event)"></menuSelect>
     </template>
   </div>
@@ -17,6 +17,9 @@ import Login from "../components/Login";
 import Weather from "../components/Weather";
 import SelectStatus from "../components/SelectStatus";
 import MenuSelect from "../components/MenuSelect";
+
+import roadConfig from "../roadConfig";
+
 export default {
   name: "index",
   components: {
@@ -37,7 +40,7 @@ export default {
         lang: "zh",
         pitch: 45,
         viewMode: "3D",
-        mapStyle: "amap://styles/bd9a2bb3ce2b4a09082e357d1860d16b",
+        mapStyle: process.env.VUE_APP_MAPSTYLE,
         features: ["road", "point"],
         area: {
           district: "九龙坡区",
@@ -49,11 +52,19 @@ export default {
         rotSpeed: 0.05,
         bRot: true
       },
-      map: null
+      map: null,
+      isStatus: true,
+      updataTime: 60000,
+      timeObject: null,
+      markerCar: [],
+      markerPol: [],
+      conut: 0
     };
   },
   mounted() {
     this.initMap();
+    // console.log(roadConfig.roadArray.length)
+
     if (this.$store.state.isLogin) {
       this.statusIndex = 1;
     } else {
@@ -61,15 +72,76 @@ export default {
     }
   },
   methods: {
+    setStatus(status) {
+      this.isStatus = status;
+      clearInterval(this.timeObject);
+      this.map.remove(this.markerCar);
+      this.map.remove(this.markerPol);
+      this.runtime();
+      if (this.isStatus) {
+        this.getTraffic();
+      }
+    },
     loginFinal(statusIndex) {
       this.statusIndex = statusIndex;
       this.$store.commit("setLoginStatus", true);
+      this.runtime();
     },
     Logout(statusIndex) {
-      console.log(statusIndex);
       this.statusIndex = statusIndex;
-
       this.$store.commit("setLoginStatus", false);
+      this.map.remove(this.markerCar);
+      this.map.remove(this.markerPol);
+      clearInterval(this.timeObject);
+    },
+    addMarkerCar: function(center, status, name) {
+      let iconStyle = "";
+      if (status == 3) {
+        // 一般拥堵
+        iconStyle = "/images/icon_car.png";
+      } else {
+        // 严重拥堵
+        iconStyle = "/images/icon_car.png";
+      }
+
+      // 在地图上标注图标
+      AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
+        let lngLats = center;
+
+        let marker = new SimpleMarker({
+          iconLabel: "",
+          //自定义图标地址
+          iconStyle: iconStyle,
+          offset: new AMap.Pixel(-30, -62),
+          map: this.map,
+          position: lngLats,
+          zIndex: 100
+        });
+        AMap.event.addListener(marker, "click", function() {
+          console.log(name);
+        });
+        this.markerCar.push(marker);
+      });
+    },
+    addMarkerPol: function(center) {
+      // 在地图上标注图标
+      AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
+        let lngLats = center;
+
+        let marker = new SimpleMarker({
+          iconLabel: "",
+          //自定义图标地址
+          iconStyle: "/images/icon_pol.png",
+          offset: new AMap.Pixel(-30, -62),
+          map: this.map,
+          position: lngLats,
+          zIndex: 100
+        });
+        AMap.event.addListener(marker, "click", function() {
+          console.log(lngLats);
+        });
+        this.markerPol.push(marker);
+      });
     },
     initMap: function() {
       // 加载地图
@@ -126,23 +198,6 @@ export default {
       //   map.addControl(traffic);
       // });
 
-      // 在地图上标注图标
-      AMapUI.loadUI(["overlay/SimpleMarker"], function(SimpleMarker) {
-        let lngLats = [106.510676, 29.502272];
-
-        let marker = new SimpleMarker({
-          iconLabel: "",
-          //自定义图标地址
-          iconStyle: "/images/icon_car.png",
-          offset: new AMap.Pixel(-30, -62),
-          map: map,
-          position: lngLats,
-          zIndex: 100
-        });
-        AMap.event.addListener(marker, "click", function() {
-          console.log(lngLats);
-        });
-      });
       // AMapUI.loadUI(["overlay/SimpleInfoWindow"], function() {
       //   let lngLats = [106.510676, 29.502272]
       //   let marker = new AMap.Marker({
@@ -170,7 +225,52 @@ export default {
       if (yaw >= 360) yaw = 0;
       map.setRotation(yaw);
     },
-    runtime: function() {}
+    runtime: function() {
+      this.timeObject = setInterval(() => {
+        if (this.isStatus) {
+          this.getTraffic();
+        }
+      }, this.updataTime);
+    },
+    getTraffic() {
+      console.log(this.conut)
+      this.conut++
+      let len = roadConfig.roadArray.length;
+      // 清除锚点
+      // 删除锚点
+      this.map.remove(this.markerCar);
+      this.map.remove(this.markerPol);
+      for (let i = 0; i < len; i++) {
+        (i => {
+          let url =
+            "https://restapi.amap.com/v3/traffic/status/road?name=" +
+            roadConfig.roadArray[i].name +
+            "&city=重庆市&key=" +
+            process.env.VUE_APP_ROADID;
+          this.$axios
+            .get(url)
+            .then(res => {
+              if (res.data.status == "0") {
+                console.log(roadConfig.roadArray[i].name);
+              } else {
+                if (
+                  res.data.trafficinfo.evaluation.status == "3" ||
+                  res.data.trafficinfo.evaluation.status == "4"
+                ) {
+                  this.addMarkerCar(
+                    roadConfig.roadArray[i].point,
+                    res.data.trafficinfo.evaluation.status,
+                    roadConfig.roadArray[i].name
+                  );
+                }
+              }
+            })
+            .catch(err => {
+              console.log("调用高德交通态势失败 : " + err);
+            });
+        })(i);
+      }
+    }
   }
 };
 </script>
