@@ -80,6 +80,8 @@ export default {
       this.runtime();
       if (this.isStatus) {
         this.getTraffic();
+      }else{
+        this.getPol()
       }
     },
     loginFinal(statusIndex) {
@@ -123,7 +125,7 @@ export default {
         this.markerCar.push(marker);
       });
     },
-    addMarkerPol: function(center) {
+    addMarkerPol: function(center, name) {
       // 在地图上标注图标
       AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
         let lngLats = center;
@@ -138,7 +140,7 @@ export default {
           zIndex: 100
         });
         AMap.event.addListener(marker, "click", function() {
-          console.log(lngLats);
+          console.log(name);
         });
         this.markerPol.push(marker);
       });
@@ -225,10 +227,12 @@ export default {
       if (yaw >= 360) yaw = 0;
       map.setRotation(yaw);
     },
-    runtime: function() {
+    runtime() {
       this.timeObject = setInterval(() => {
         if (this.isStatus) {
           this.getTraffic();
+        }else{
+          this.getPol()
         }
       }, this.updataTime);
     },
@@ -269,6 +273,18 @@ export default {
               console.log("调用高德交通态势失败 : " + err);
             });
         })(i);
+      }
+    },
+    getPol(){
+      let len = roadConfig.roadArray.length;
+      // 清除锚点
+      // 删除锚点
+      this.map.remove(this.markerCar);
+      this.map.remove(this.markerPol);
+      for(let i = 0; i < 10; i++){
+        let num = Math.floor(Math.random()*len)
+        let numChild = Math.floor(Math.random()*roadConfig.roadArray[num].camreaArray.length)
+        this.addMarkerPol(roadConfig.roadArray[num].camreaArray[numChild].point, roadConfig.polName[i].name)
       }
     }
   }
