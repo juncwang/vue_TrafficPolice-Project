@@ -6,17 +6,19 @@
       <weather :district="amap.area.district"></weather>
       <selectStatus @setStatus="setStatus($event)"></selectStatus>
       <menuSelect @Logout="Logout($event)"></menuSelect>
+      <polList v-if="!isStatus"></polList>
     </template>
   </div>
 </template>
 
 <script>
 import AMap from "AMap";
-import AMapUI from "AMapUI";
+// import AMapUI from "AMapUI";
 import Login from "../components/Login";
 import Weather from "../components/Weather";
 import SelectStatus from "../components/SelectStatus";
 import MenuSelect from "../components/MenuSelect";
+import PolList from "../components/PolList";
 
 import roadConfig from "../roadConfig";
 
@@ -26,7 +28,8 @@ export default {
     login: Login,
     weather: Weather,
     selectStatus: SelectStatus,
-    menuSelect: MenuSelect
+    menuSelect: MenuSelect,
+    polList: PolList
   },
   data() {
     return {
@@ -97,6 +100,7 @@ export default {
       clearInterval(this.timeObject);
     },
     addMarkerCar: function(center, status, name) {
+      
       let iconStyle = "";
       if (status == 3) {
         // 一般拥堵
@@ -106,44 +110,81 @@ export default {
         iconStyle = "/images/icon_car.png";
       }
 
-      // 在地图上标注图标
-      AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
-        let lngLats = center;
+      // 地图上标注 marker
+      let marker = new AMap.Marker({
+        position: new AMap.LngLat(...center),
+        offset: new AMap.Pixel(-30, -62),
+        icon: iconStyle,
+        title: name
+      })
 
-        let marker = new SimpleMarker({
-          iconLabel: "",
-          //自定义图标地址
-          iconStyle: iconStyle,
-          offset: new AMap.Pixel(-30, -62),
-          map: this.map,
-          position: lngLats,
-          zIndex: 100
-        });
-        AMap.event.addListener(marker, "click", function() {
-          console.log(name);
-        });
-        this.markerCar.push(marker);
-      });
+      AMap.event.addListener(marker, 'click', function(){
+        console.log(name)
+      })
+
+      this.markerCar.push(marker)
+      this.map.add(marker)
+
+      // 在地图上标注图标
+      // AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
+      //   let lngLats = center;
+
+      //   let marker = new SimpleMarker({
+      //     iconLabel: "",
+      //     //自定义图标地址
+      //     iconStyle: iconStyle,
+      //     offset: new AMap.Pixel(-30, -62),
+      //     map: this.map,
+      //     position: lngLats,
+      //     zIndex: 100
+      //   });
+      //   AMap.event.addListener(marker, "click", function() {
+      //     console.log(name);
+      //   });
+      //   this.markerCar.push(marker);
+      // });
     },
-    addMarkerPol: function(center, name) {
+    addMarkerPol: function(center, name, isAdd = false) {
       // 在地图上标注图标
-      AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
-        let lngLats = center;
+      // AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
+      //   let lngLats = center;
 
-        let marker = new SimpleMarker({
-          iconLabel: "",
-          //自定义图标地址
-          iconStyle: "/images/icon_pol.png",
-          offset: new AMap.Pixel(-30, -62),
-          map: this.map,
-          position: lngLats,
-          zIndex: 100
-        });
-        AMap.event.addListener(marker, "click", function() {
-          console.log(name);
-        });
-        this.markerPol.push(marker);
-      });
+      //   let marker = new SimpleMarker({
+      //     iconLabel: "",
+      //     //自定义图标地址
+      //     iconStyle: "/images/icon_pol.png",
+      //     offset: new AMap.Pixel(-30, -62),
+      //     map: this.map,
+      //     position: lngLats,
+      //     zIndex: 100
+      //   });
+      //   AMap.event.addListener(marker, "click", function() {
+      //     console.log(name);
+      //   });
+      //   this.markerPol.push(marker);
+      // });
+      // 地图上标注 marker
+      let content = ''
+
+      if(isAdd){
+        content = '<div class="pol-add"></div>'
+      }
+
+
+      let marker = new AMap.Marker({
+        content: content,
+        position: new AMap.LngLat(...center),
+        offset: new AMap.Pixel(-30, -62),
+        icon: "/images/icon_pol.png",
+        title: name
+      })
+
+      AMap.event.addListener(marker, 'click', function(){
+        console.log(name)
+      })
+
+      this.markerPol.push(marker)
+      this.map.add(marker)
     },
     initMap: function() {
       // 加载地图
@@ -277,15 +318,47 @@ export default {
     },
     getPol(){
       let len = roadConfig.roadArray.length;
+      let randomArr = []
       // 清除锚点
       // 删除锚点
       this.map.remove(this.markerCar);
       this.map.remove(this.markerPol);
       for(let i = 0; i < 10; i++){
-        let num = Math.floor(Math.random()*len)
+        let num = this.getRandomForArray(randomArr, len)
         let numChild = Math.floor(Math.random()*roadConfig.roadArray[num].camreaArray.length)
-        this.addMarkerPol(roadConfig.roadArray[num].camreaArray[numChild].point, roadConfig.polName[i].name)
+        if(i < 8){
+          this.addMarkerPol(roadConfig.roadArray[num].camreaArray[numChild].point, roadConfig.polName[i].name)
+        }else{
+          this.addMarkerPol(roadConfig.roadArray[num].camreaArray[numChild].point, roadConfig.polName[i].name, true)
+        }
+        randomArr.push(num)
       }
+    },
+    getRandomForArray(randomArr,len) {
+      let isLoop = false
+      let num = 0
+      do{
+        num = Math.floor(Math.random()*len)
+        // randomArr.forEach( item => {
+        //   if(item == num){
+        //     isLoop = true
+        //     break
+        //   }else{
+        //     isLoop = false
+        //   }
+        // })
+        let arrLen = randomArr.length
+        for(let i = 0; i < arrLen; i++){
+          if(randomArr[i] == num){
+            isLoop = true
+            break
+          }else{
+            isLoop = false
+          }
+        }
+      }while(isLoop)
+      console.log(num)
+      return num
     }
   }
 };

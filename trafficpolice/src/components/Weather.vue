@@ -52,7 +52,7 @@ export default {
                     this.weather = data.weather
                     if(data.temperature > 35){
                         this.$refs.temImg.style.top = '0px'
-                    }else if(data.temperature > 25){
+                    }else if(data.temperature > 28){
                         this.$refs.temImg.style.top = '-73px'
                     }else if(data.temperature > 10){
                         this.$refs.temImg.style.top = '-146px'
