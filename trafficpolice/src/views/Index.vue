@@ -48,9 +48,9 @@ export default {
         area: {
           district: "九龙坡区",
           fillOpacity: 0.1,
-          fillColor: "#fff",
+          fillColor: "#000",
           strokeWeight: 5,
-          strokeColor: "#fff"
+          strokeColor: "#000"
         },
         rotSpeed: 0.05,
         bRot: true
@@ -61,12 +61,10 @@ export default {
       timeObject: null,
       markerCar: [],
       markerPol: [],
-      conut: 0
     };
   },
   mounted() {
     this.initMap();
-    // console.log(roadConfig.roadArray.length)
 
     if (this.$store.state.isLogin) {
       this.statusIndex = 1;
@@ -278,8 +276,6 @@ export default {
       }, this.updataTime);
     },
     getTraffic() {
-      console.log(this.conut)
-      this.conut++
       let len = roadConfig.roadArray.length;
       // 清除锚点
       // 删除锚点

@@ -74,12 +74,12 @@ export default {
 
 <style scoped>
 #weather {
-    width: 1276px;
+    width: 880px;
     height: 73px;
     /* overflow: hidden; */
     position: absolute;
     left: 50%;
-    margin-left: -638px;
+    margin-left: -440px;
     top: 20px;
     background-image: url('../assets/Features_BGColor.png');
     border-radius: 50px;
@@ -87,7 +87,9 @@ export default {
     color: white;
     display: flex;
     flex-wrap: nowrap;
-    justify-content: space-around;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 0 40px;
 }
 
 .weatherList {
