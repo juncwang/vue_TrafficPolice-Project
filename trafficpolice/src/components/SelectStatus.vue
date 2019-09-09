@@ -21,7 +21,7 @@ export default {
     return {
       isSelect: true,
       isRunTime: true,
-      RunTimeSpeed: 1000
+      RunTimeSpeed: 1500
     };
   },
   mounted() {

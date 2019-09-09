@@ -502,33 +502,65 @@ export default {
 	"polName": [
 		{
 			"name": "张警官",
+			"path": "/images/pol_z.png"
 		},
 		{
 			"name": "李警官",
+			"path": "/images/pol_l.png"
 		},
 		{
 			"name": "王警官",
+			"path": "/images/pol_w.png"
 		},
 		{
 			"name": "杨警官",
+			"path": "/images/pol_y.png"
 		},
 		{
 			"name": "刘警官",
+			"path": "/images/pol_liu.png"
 		},
 		{
 			"name": "邱警官",
+			"path": "/images/pol_q.png"
 		},
 		{
 			"name": "孙警官",
+			"path": "/images/pol_s.png"
 		},
 		{
 			"name": "邹警官",
+			"path": "/images/pol_zou.png"
 		},
 		{
 			"name": "吕警官",
+			"path": "/images/pol_lv.png"
 		},
 		{
 			"name": "熊警官",
+			"path": "/images/pol_x.png"
 		},
+	],
+	description: [
+		"单车事故",
+		"公共设施损坏",
+		"大型活动",
+		"信号设备故障",
+		"水淹断路",
+		"多车事故",
+		"道路损坏",
+		"市政维护",
+		"交通设备损坏",
+		"塌方断道",
+		"占道停车",
+		"植被阻碍",
+		"道路施工",
+		"附属设施损坏",
+		"泥石流断道",
+		"伤人事故",
+		"医疗,火灾救援",
+		"外事访问",
+		"市政设施损坏",
+		"雷击自燃"
 	]
 }

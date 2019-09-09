@@ -6,7 +6,7 @@
       <weather :district="amap.area.district"></weather>
       <selectStatus @setStatus="setStatus($event)"></selectStatus>
       <menuSelect @Logout="Logout($event)"></menuSelect>
-      <polList v-if="!isStatus"></polList>
+      <polList ref="polListVal" v-show="!isStatus"></polList>
     </template>
   </div>
 </template>
@@ -33,6 +33,8 @@ export default {
   },
   data() {
     return {
+      description: [],
+      polListVal: null,
       statusPage: ["login", "features"],
       statusIndex: 0,
       amap: {
@@ -60,7 +62,7 @@ export default {
       updataTime: 60000,
       timeObject: null,
       markerCar: [],
-      markerPol: [],
+      markerPol: []
     };
   },
   mounted() {
@@ -71,6 +73,9 @@ export default {
     } else {
       this.statusIndex = 0;
     }
+
+    console.log(this.$refs.polListVal);
+    this.polListVal = this.$refs.polListVal;
   },
   methods: {
     setStatus(status) {
@@ -81,8 +86,8 @@ export default {
       this.runtime();
       if (this.isStatus) {
         this.getTraffic();
-      }else{
-        this.getPol()
+      } else {
+        this.getPol();
       }
     },
     loginFinal(statusIndex) {
@@ -98,14 +103,13 @@ export default {
       clearInterval(this.timeObject);
     },
     addMarkerCar: function(center, status, name) {
-      
       let iconStyle = "";
       if (status == 3) {
         // 一般拥堵
         iconStyle = "/images/icon_car.png";
       } else {
         // 严重拥堵
-        iconStyle = "/images/icon_car.png";
+        iconStyle = "/images/icon_car_act.png";
       }
 
       // 地图上标注 marker
@@ -114,14 +118,14 @@ export default {
         offset: new AMap.Pixel(-30, -62),
         icon: iconStyle,
         title: name
-      })
+      });
 
-      AMap.event.addListener(marker, 'click', function(){
-        console.log(name)
-      })
+      AMap.event.addListener(marker, "click", () => {
+        this.$router.push('/details/1')
+      });
 
-      this.markerCar.push(marker)
-      this.map.add(marker)
+      this.markerCar.push(marker);
+      this.map.add(marker);
 
       // 在地图上标注图标
       // AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
@@ -142,7 +146,7 @@ export default {
       //   this.markerCar.push(marker);
       // });
     },
-    addMarkerPol: function(center, name, isAdd = false) {
+    addMarkerPol(center, num, isAdd = false) {
       // 在地图上标注图标
       // AMapUI.loadUI(["overlay/SimpleMarker"], SimpleMarker => {
       //   let lngLats = center;
@@ -162,12 +166,11 @@ export default {
       //   this.markerPol.push(marker);
       // });
       // 地图上标注 marker
-      let content = ''
+      let content = "";
 
-      if(isAdd){
-        content = '<div class="pol-add"></div>'
+      if (isAdd) {
+        content = '<div class="pol-add"></div>';
       }
-
 
       let marker = new AMap.Marker({
         content: content,
@@ -175,14 +178,19 @@ export default {
         offset: new AMap.Pixel(-30, -62),
         icon: "/images/icon_pol.png",
         title: name
-      })
+      });
 
-      AMap.event.addListener(marker, 'click', function(){
-        console.log(name)
-      })
+      let polListVal = this.$refs.polListVal;
 
-      this.markerPol.push(marker)
-      this.map.add(marker)
+      (function(polListVal,num,isAdd) {
+        AMap.event.addListener(marker, "click", function() {
+          polListVal.num = num
+          polListVal.isAct = isAdd
+        });
+      })(polListVal,num,isAdd);
+
+      this.markerPol.push(marker);
+      this.map.add(marker);
     },
     initMap: function() {
       // 加载地图
@@ -270,8 +278,8 @@ export default {
       this.timeObject = setInterval(() => {
         if (this.isStatus) {
           this.getTraffic();
-        }else{
-          this.getPol()
+        } else {
+          this.getPol();
         }
       }, this.updataTime);
     },
@@ -312,29 +320,48 @@ export default {
         })(i);
       }
     },
-    getPol(){
+    getPol() {
       let len = roadConfig.roadArray.length;
-      let randomArr = []
+      let randomArr = [];
       // 清除锚点
       // 删除锚点
       this.map.remove(this.markerCar);
       this.map.remove(this.markerPol);
-      for(let i = 0; i < 10; i++){
-        let num = this.getRandomForArray(randomArr, len)
-        let numChild = Math.floor(Math.random()*roadConfig.roadArray[num].camreaArray.length)
-        if(i < 8){
-          this.addMarkerPol(roadConfig.roadArray[num].camreaArray[numChild].point, roadConfig.polName[i].name)
-        }else{
-          this.addMarkerPol(roadConfig.roadArray[num].camreaArray[numChild].point, roadConfig.polName[i].name, true)
+      for (let i = 0; i < 10; i++) {
+        let num = this.getRandomForArray(randomArr, len);
+        let numChild = Math.floor(
+          Math.random() * roadConfig.roadArray[num].camreaArray.length
+        );
+        if (i < 8) {
+          this.addMarkerPol(
+            roadConfig.roadArray[num].camreaArray[numChild].point,
+            i
+          );
+        } else {
+          this.addMarkerPol(
+            roadConfig.roadArray[num].camreaArray[numChild].point,
+            i,
+            true
+          );
         }
-        randomArr.push(num)
+        randomArr.push(num);
+
+
+        let desTmp = []
+        for(let j = 0; j < 4; j++){
+          desTmp.push(roadConfig.description[i + j])
+        }
+        this.description.push(desTmp)
+
       }
+      this.$refs.polListVal.description = this.description
+
     },
-    getRandomForArray(randomArr,len) {
-      let isLoop = false
-      let num = 0
-      do{
-        num = Math.floor(Math.random()*len)
+    getRandomForArray(randomArr, len) {
+      let isLoop = false;
+      let num = 0;
+      do {
+        num = Math.floor(Math.random() * len);
         // randomArr.forEach( item => {
         //   if(item == num){
         //     isLoop = true
@@ -343,18 +370,18 @@ export default {
         //     isLoop = false
         //   }
         // })
-        let arrLen = randomArr.length
-        for(let i = 0; i < arrLen; i++){
-          if(randomArr[i] == num){
-            isLoop = true
-            break
-          }else{
-            isLoop = false
+        let arrLen = randomArr.length;
+        for (let i = 0; i < arrLen; i++) {
+          if (randomArr[i] == num) {
+            isLoop = true;
+            break;
+          } else {
+            isLoop = false;
           }
         }
-      }while(isLoop)
-      console.log(num)
-      return num
+      } while (isLoop);
+      console.log(num);
+      return num;
     }
   }
 };

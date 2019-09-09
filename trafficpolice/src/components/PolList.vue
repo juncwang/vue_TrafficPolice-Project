@@ -1,5 +1,15 @@
 <template>
   <div id="polList">
+    <div v-if="num > -1" class="selectPol">
+      <div ref="polHead" class="polHead"></div>
+      <div class="polName">
+        <div>一支队</div>
+        <div ref="polName" v-text="polName"></div>
+      </div>
+      <div v-if="isAct" ref="description" class="description" v-html="selecthtml">
+      </div>
+      <div v-if="isAct" class="req"></div>
+    </div>
     <div class="search">
       <div class="serarch-title">搜索巡警</div>
       <div class="serarch-input">
@@ -16,10 +26,25 @@
         </ul>
       </div>
     </div>
+    <div class="list">
+      <ul>
+        <li></li>
+        <li></li>
+      </ul>
+      <ul>
+        <li></li>
+        <li></li>
+      </ul>
+      <ul>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+import roadConfig from "../roadConfig";
 export default {
   name: "polList",
   data() {
@@ -29,8 +54,20 @@ export default {
         isListOne: false,
         isListStatus: false,
         isListNum: false
-      }
+      },
+      num: -1,
+      isAct: false,
+      polName: '',
+      description: [],
+      selecthtml: ''
     };
+  },
+  updated(){
+    this.$refs.polHead.style.backgroundImage = 'url(' + roadConfig.polName[this.num].path + ')'
+    this.polName = roadConfig.polName[this.num].name
+    this.selecthtml = `
+    <b>${this.description[this.num][0]}</b><b>${this.description[this.num][1]}</b><b>${this.description[this.num][2]}</b><b>${this.description[this.num][3]}</b>
+    `
   },
   methods: {
     searchSelectAct(num) {
@@ -78,8 +115,58 @@ export default {
   padding: 30px;
 }
 
+.selectPol {
+  width: 100%;
+  height: 64px;
+  position: relative;
+  margin: 20px 0 40px;
+  font-size: 12px;
+}
+
+.polHead{
+  width: 64px;
+  height: 64px;
+  border-radius: 50px;
+  float: left;
+  background-image: url('/images/pol_z.png');
+}
+
+.polName {
+  float: left;
+  line-height: 24px;
+  padding: 7px 0px;
+  margin-left: 10px;
+}
+
+.description {
+  float: right;
+  width: 240px;
+  padding: 7px 0px;
+  line-height: 24px;
+  margin-left: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.description>b {
+  display: block;
+  width: 120px;
+  font-weight: bold;
+  color: #19ff8c;
+  text-align: right;
+}
+
+.req {
+  width: 126px;
+  height: 46px;
+  background-image: url('/images/req.png');
+  position: absolute;
+  top: -70px;
+}
+
 .search div {
-  margin: 10px 0;
+  margin: 20px 0;
 }
 
 .serarch-input {
@@ -142,4 +229,46 @@ export default {
   color: #19ff8c;
   font-weight: bold;
 }
+
+.list {
+  width: 100%;
+  margin: 50px 0;
+}
+
+.list ul {
+  margin: 30px 0;
+  width: 100%;
+  height: 68px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.list ul li:nth-child(2){
+  width: 30px;
+  height: 54px;
+  background-image: url('../assets/list_message.png');
+  margin-left: 40px;
+  cursor: pointer;
+}
+
+.list ul:nth-child(1) li:nth-child(1){
+  width: 297px;
+  height: 62px;
+  background-image: url('../assets/list_image_1.png');
+}
+
+.list ul:nth-child(2) li:nth-child(1){
+  width: 297px;
+  height: 62px;
+  background-image: url('../assets/list_image_2.png');
+}
+
+.list ul:nth-child(3) li:nth-child(1){
+  width: 297px;
+  height: 62px;
+  background-image: url('../assets/list_image_3.png');
+  
+}
+
+
 </style>
