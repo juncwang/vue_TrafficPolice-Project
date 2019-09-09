@@ -87,6 +87,8 @@ export default {
       if (this.isStatus) {
         this.getTraffic();
       } else {
+        this.$refs.polListVal.num = -1;
+        this.$refs.polListVal.isAct = false;
         this.getPol();
       }
     },
