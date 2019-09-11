@@ -3,10 +3,10 @@
     <div class="details-bg">
       <div class="showMaps">
         <div class="detailsVideo">
-          <video class="videoV"></video>
-          <div class="videoBG"></div>
-          <div class="videoPlay"></div>
-          <div class="videoPause"></div>
+          <video ref="videoV" src="/video/move.mp4" class="videoV" loop muted></video>
+          <div class="videoBG" hidden></div>
+          <div @click="videoPlay" class="videoPlay"></div>
+          <div @click="videoPause" class="videoPause"></div>
         </div>
         <div id="detailsMap"></div>
       </div>
@@ -29,7 +29,6 @@
               拥堵原因预览 :
               <span class="noSelect" v-if="stringYD == ''">无预览 *</span>
               <span class="selectList">{{stringYD}}</span>
-              
             </div>
           </div>
           <div class="serarch-input">
@@ -70,7 +69,8 @@ export default {
   name: "detailsts",
   data() {
     return {
-      inputText: '',
+      isVideoPlay: false,
+      inputText: "",
       clickNum: new Set(),
       inputStr: [],
       stringYD: "",
@@ -112,14 +112,26 @@ export default {
     this.initMap();
   },
   methods: {
-    closeBtn(){
-      this.$router.push('/index')
+    videoPlay() {
+      if (!this.isVideoPlay) {
+        this.$refs.videoV.play();
+        this.isVideoPlay = true;
+      }
     },
-    clickOK(){
-      if(this.inputText != ''){
-        this.inputStr.push(this.inputText)
-        this.combinStr()
-        this.inputText = ''
+    videoPause() {
+      if (this.isVideoPlay) {
+        this.$refs.videoV.pause();
+        this.isVideoPlay = false;
+      }
+    },
+    closeBtn() {
+      this.$router.push("/index");
+    },
+    clickOK() {
+      if (this.inputText != "") {
+        this.inputStr.push(this.inputText);
+        this.combinStr();
+        this.inputText = "";
       }
     },
     clickDataList(index) {
@@ -139,7 +151,7 @@ export default {
       });
       this.inputStr.forEach(item => {
         this.stringYD += item + "、";
-      })
+      });
     },
     initMap() {
       // 加载地图
@@ -307,7 +319,7 @@ export default {
   position: absolute;
   top: 0px;
   left: 0px;
-  background-color: yellow;
+  background-image: url("/images/video_BG.jpg");
   width: 815px;
   height: 420px;
 }
@@ -482,7 +494,7 @@ export default {
 }
 
 .serarch-input span:active {
-  opacity: .5;
+  opacity: 0.5;
 }
 
 .selectPol {
@@ -497,7 +509,7 @@ export default {
   height: 280px;
   display: flex;
   flex-wrap: wrap;
-  justify-content:space-between;
+  justify-content: space-between;
   box-sizing: border-box;
   padding: 50px 20px;
 }
@@ -509,30 +521,30 @@ export default {
   flex-wrap: nowrap;
 }
 
-.polList li div{
+.polList li div {
   width: 299px;
   height: 70px;
   background-repeat: no-repeat;
 }
 
-.polList li:nth-child(1) div{
-  background-image: url('../assets/pol_1.png');
+.polList li:nth-child(1) div {
+  background-image: url("../assets/pol_1.png");
 }
-.polList li:nth-child(2) div{
-  background-image: url('../assets/pol_2.png');
+.polList li:nth-child(2) div {
+  background-image: url("../assets/pol_2.png");
 }
-.polList li:nth-child(3) div{
-  background-image: url('../assets/pol_3.png');
+.polList li:nth-child(3) div {
+  background-image: url("../assets/pol_3.png");
 }
-.polList li:nth-child(4) div{
-  background-image: url('../assets/pol_4.png');
+.polList li:nth-child(4) div {
+  background-image: url("../assets/pol_4.png");
 }
 
-.polList li span{
+.polList li span {
   display: block;
   width: 81px;
   height: 70px;
-  background-image: url('../assets/goPol.png');
+  background-image: url("../assets/goPol.png");
   background-repeat: no-repeat;
   background-size: 30px 56px;
   background-position: 50% 0;
@@ -550,7 +562,7 @@ export default {
   top: -20px;
   width: 230px;
   height: 73px;
-  background-image: url('../assets/closeBtn.png');
+  background-image: url("../assets/closeBtn.png");
   cursor: pointer;
 }
 
