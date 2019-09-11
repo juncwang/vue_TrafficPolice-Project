@@ -104,7 +104,7 @@ export default {
       this.map.remove(this.markerPol);
       clearInterval(this.timeObject);
     },
-    addMarkerCar: function(center, status, name) {
+    addMarkerCar: function(center, status, num) {
       let iconStyle = "";
       if (status == 3) {
         // 一般拥堵
@@ -119,12 +119,18 @@ export default {
         position: new AMap.LngLat(...center),
         offset: new AMap.Pixel(-30, -62),
         icon: iconStyle,
-        title: name
+        title: roadConfig.roadArray[num].name
       });
 
-      AMap.event.addListener(marker, "click", () => {
-        this.$router.push('/details/1')
-      });
+      ((num, status) => {
+        AMap.event.addListener(marker, "click", () => {
+          // this.map.destroy()
+          // this.map.remove(this.markerCar);
+          // this.map.remove(this.markerPol);
+          clearInterval(this.timeObject);
+          this.$router.push("/detailsts/" + num + "/" + status);
+        });
+      })(num, status);
 
       this.markerCar.push(marker);
       this.map.add(marker);
@@ -184,12 +190,12 @@ export default {
 
       let polListVal = this.$refs.polListVal;
 
-      (function(polListVal,num,isAdd) {
+      (function(polListVal, num, isAdd) {
         AMap.event.addListener(marker, "click", function() {
-          polListVal.num = num
-          polListVal.isAct = isAdd
+          polListVal.num = num;
+          polListVal.isAct = isAdd;
         });
-      })(polListVal,num,isAdd);
+      })(polListVal, num, isAdd);
 
       this.markerPol.push(marker);
       this.map.add(marker);
@@ -311,7 +317,7 @@ export default {
                   this.addMarkerCar(
                     roadConfig.roadArray[i].point,
                     res.data.trafficinfo.evaluation.status,
-                    roadConfig.roadArray[i].name
+                    i
                   );
                 }
               }
@@ -348,30 +354,19 @@ export default {
         }
         randomArr.push(num);
 
-
-        let desTmp = []
-        for(let j = 0; j < 4; j++){
-          desTmp.push(roadConfig.description[i + j])
+        let desTmp = [];
+        for (let j = 0; j < 4; j++) {
+          desTmp.push(roadConfig.description[i + j]);
         }
-        this.description.push(desTmp)
-
+        this.description.push(desTmp);
       }
-      this.$refs.polListVal.description = this.description
-
+      this.$refs.polListVal.description = this.description;
     },
     getRandomForArray(randomArr, len) {
       let isLoop = false;
       let num = 0;
       do {
         num = Math.floor(Math.random() * len);
-        // randomArr.forEach( item => {
-        //   if(item == num){
-        //     isLoop = true
-        //     break
-        //   }else{
-        //     isLoop = false
-        //   }
-        // })
         let arrLen = randomArr.length;
         for (let i = 0; i < arrLen; i++) {
           if (randomArr[i] == num) {

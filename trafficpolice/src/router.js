@@ -18,9 +18,10 @@ const router = new Router({
       path: '*',
       redirect: '/'
     },{
-      path: '/details/:id',
-      name: 'details',
-      component: () => import('./views/Details')
+      path: '/detailsts/:num/:status',
+      name: 'detailsts',
+      props: true,
+      component: () => import('./views/DetailsTs')
     }
   ]
 })
