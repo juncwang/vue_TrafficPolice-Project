@@ -128,6 +128,7 @@ export default {
           // this.map.remove(this.markerCar);
           // this.map.remove(this.markerPol);
           clearInterval(this.timeObject);
+          this.map.destroy()
           this.$router.push("/detailsts/" + num + "/" + status);
         });
       })(num, status);

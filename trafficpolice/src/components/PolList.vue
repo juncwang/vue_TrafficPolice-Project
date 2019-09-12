@@ -251,6 +251,10 @@ export default {
   cursor: pointer;
 }
 
+.list ul li:nth-child(2):active {
+  opacity: 0.5;
+}
+
 .list ul:nth-child(1) li:nth-child(1){
   width: 297px;
   height: 62px;

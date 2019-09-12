@@ -125,6 +125,7 @@ export default {
       }
     },
     closeBtn() {
+      this.map.destroy()
       this.$router.push("/index");
     },
     clickOK() {
