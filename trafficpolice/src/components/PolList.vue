@@ -6,8 +6,7 @@
         <div>一支队</div>
         <div ref="polName" v-text="polName"></div>
       </div>
-      <div v-if="isAct" ref="description" class="description" v-html="selecthtml">
-      </div>
+      <div v-if="isAct" ref="description" class="description" v-html="selecthtml"></div>
       <div v-if="isAct" class="req"></div>
     </div>
     <div class="search">
@@ -57,44 +56,52 @@ export default {
       },
       num: -1,
       isAct: false,
-      polName: '',
+      polName: "",
       description: [],
-      selecthtml: ''
+      selecthtml: ""
     };
   },
-  updated(){
-    this.$refs.polHead.style.backgroundImage = 'url(' + roadConfig.polName[this.num].path + ')'
-    this.polName = roadConfig.polName[this.num].name
+  updated() {
+    if (this.num > -1) {
+      this.$refs.polHead.style.backgroundImage =
+        "url(" + roadConfig.polName[this.num].path + ")";
+    }
+
+    this.polName = roadConfig.polName[this.num].name;
     this.selecthtml = `
-    <b>${this.description[this.num][0]}</b><b>${this.description[this.num][1]}</b><b>${this.description[this.num][2]}</b><b>${this.description[this.num][3]}</b>
-    `
+    <b>${this.description[this.num][0]}</b><b>${
+      this.description[this.num][1]
+    }</b><b>${this.description[this.num][2]}</b><b>${
+      this.description[this.num][3]
+    }</b>
+    `;
   },
   methods: {
     searchSelectAct(num) {
       switch (num) {
         case 0:
-            this.searchSelect.isListAll = true
-            this.searchSelect.isListOne = false
-            this.searchSelect.isListStatus = false
-            this.searchSelect.isListNum = false
+          this.searchSelect.isListAll = true;
+          this.searchSelect.isListOne = false;
+          this.searchSelect.isListStatus = false;
+          this.searchSelect.isListNum = false;
           break;
         case 1:
-            this.searchSelect.isListAll = false
-            this.searchSelect.isListOne = true
-            this.searchSelect.isListStatus = false
-            this.searchSelect.isListNum = false
+          this.searchSelect.isListAll = false;
+          this.searchSelect.isListOne = true;
+          this.searchSelect.isListStatus = false;
+          this.searchSelect.isListNum = false;
           break;
         case 2:
-            this.searchSelect.isListAll = false
-            this.searchSelect.isListOne = false
-            this.searchSelect.isListStatus = true
-            this.searchSelect.isListNum = false
+          this.searchSelect.isListAll = false;
+          this.searchSelect.isListOne = false;
+          this.searchSelect.isListStatus = true;
+          this.searchSelect.isListNum = false;
           break;
         case 3:
-            this.searchSelect.isListAll = false
-            this.searchSelect.isListOne = false
-            this.searchSelect.isListStatus = false
-            this.searchSelect.isListNum = true
+          this.searchSelect.isListAll = false;
+          this.searchSelect.isListOne = false;
+          this.searchSelect.isListStatus = false;
+          this.searchSelect.isListNum = true;
           break;
       }
     }
@@ -123,12 +130,12 @@ export default {
   font-size: 12px;
 }
 
-.polHead{
+.polHead {
   width: 64px;
   height: 64px;
   border-radius: 50px;
   float: left;
-  background-image: url('/images/pol_z.png');
+  background-image: url("/images/pol_z.png");
 }
 
 .polName {
@@ -149,7 +156,7 @@ export default {
   justify-content: flex-end;
 }
 
-.description>b {
+.description > b {
   display: block;
   width: 120px;
   font-weight: bold;
@@ -160,7 +167,7 @@ export default {
 .req {
   width: 126px;
   height: 46px;
-  background-image: url('/images/req.png');
+  background-image: url("/images/req.png");
   position: absolute;
   top: -70px;
 }
@@ -243,10 +250,10 @@ export default {
   justify-content: flex-start;
 }
 
-.list ul li:nth-child(2){
+.list ul li:nth-child(2) {
   width: 30px;
   height: 54px;
-  background-image: url('../assets/list_message.png');
+  background-image: url("../assets/list_message.png");
   margin-left: 40px;
   cursor: pointer;
 }
@@ -255,24 +262,21 @@ export default {
   opacity: 0.5;
 }
 
-.list ul:nth-child(1) li:nth-child(1){
+.list ul:nth-child(1) li:nth-child(1) {
   width: 297px;
   height: 62px;
-  background-image: url('../assets/list_image_1.png');
+  background-image: url("../assets/list_image_1.png");
 }
 
-.list ul:nth-child(2) li:nth-child(1){
+.list ul:nth-child(2) li:nth-child(1) {
   width: 297px;
   height: 62px;
-  background-image: url('../assets/list_image_2.png');
+  background-image: url("../assets/list_image_2.png");
 }
 
-.list ul:nth-child(3) li:nth-child(1){
+.list ul:nth-child(3) li:nth-child(1) {
   width: 297px;
   height: 62px;
-  background-image: url('../assets/list_image_3.png');
-  
+  background-image: url("../assets/list_image_3.png");
 }
-
-
 </style>

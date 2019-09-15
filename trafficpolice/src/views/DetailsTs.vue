@@ -40,22 +40,36 @@
           <ul class="polList">
             <li>
               <div></div>
-              <span></span>
+              <span @click="pjFunc(1)"></span>
             </li>
             <li>
               <div></div>
-              <span></span>
+              <span @click="pjFunc(2)"></span>
             </li>
             <li>
               <div></div>
-              <span></span>
+              <span @click="pjFunc(3)"></span>
             </li>
             <li>
               <div></div>
-              <span></span>
+              <span @click="pjFunc(4)"></span>
             </li>
           </ul>
           <div class="closeBtn" @click="closeBtn"></div>
+        </div>
+      </div>
+    </div>
+    <div v-if="isDisplayDDT" class="tsBG">
+      <div class="tishi">
+        <div class="title">点点通 - 派警</div>
+        <div ref="imgHeader" :class="{imgHeader:true, pol_1: p1, pol_2: p2, pol_3:p3, pol_4:p4}"></div>
+        <div class="textFont">
+          拥堵原因:
+          <span>* {{stringYD}}</span>
+        </div>
+        <div class="btntitle">
+          <div @click="closePage"></div>
+          <div @click="closeTitle"></div>
         </div>
       </div>
     </div>
@@ -69,6 +83,12 @@ export default {
   name: "detailsts",
   data() {
     return {
+      rotTime: null,
+      p1: false,
+      p2: false,
+      p3: false,
+      p4: false,
+      isDisplayDDT: false,
       isVideoPlay: false,
       inputText: "",
       clickNum: new Set(),
@@ -112,6 +132,38 @@ export default {
     this.initMap();
   },
   methods: {
+    closePage() {
+      this.isDisplayDDT = false
+      clearInterval(this.rotTime)
+      this.$router.push('/index')
+    },
+    closeTitle() {
+      this.isDisplayDDT = false
+    },
+    pjFunc(num) {
+      this.falseP()
+      switch (num) {
+        case 1:
+          this.p1 = true
+          break;
+        case 2:
+          this.p2 = true
+          break;
+        case 3:
+          this.p3 = true
+          break;
+        case 4:
+          this.p4 = true
+          break;
+      }
+      this.isDisplayDDT = true;
+    },
+    falseP(){
+      this.p1 = false
+      this.p2 = false
+      this.p3 = false
+      this.p4 = false
+    },
     videoPlay() {
       if (!this.isVideoPlay) {
         this.$refs.videoV.play();
@@ -125,7 +177,7 @@ export default {
       }
     },
     closeBtn() {
-      this.map.destroy()
+      this.map.destroy();
       this.$router.push("/index");
     },
     clickOK() {
@@ -221,7 +273,7 @@ export default {
       this.markerCar.push(marker);
       this.map.add(marker);
 
-      setInterval(() => {
+      this.rotTime = setInterval(() => {
         if (this.amap.bRot) {
           let yaw = this.map.getRotation() + this.amap.rotSpeed;
           if (yaw >= 360) yaw = 0;
@@ -529,16 +581,16 @@ export default {
 }
 
 .polList li:nth-child(1) div {
-  background-image: url("../assets/pol_1.png");
+  background-image: url("/images/pol_1.png");
 }
 .polList li:nth-child(2) div {
-  background-image: url("../assets/pol_2.png");
+  background-image: url("/images/pol_2.png");
 }
 .polList li:nth-child(3) div {
-  background-image: url("../assets/pol_3.png");
+  background-image: url("/images/pol_3.png");
 }
 .polList li:nth-child(4) div {
-  background-image: url("../assets/pol_4.png");
+  background-image: url("/images/pol_4.png");
 }
 
 .polList li span {
@@ -569,5 +621,93 @@ export default {
 
 .closeBtn:active {
   opacity: 0.5;
+}
+
+.tsBG {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.tishi {
+  width: 684px;
+  height: 346px;
+  position: absolute;
+  top: 50%;
+  margin-top: -173px;
+  left: 50%;
+  margin-left: -342px;
+  background-color: white;
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding: 0 20px;
+}
+
+.title {
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 13px;
+  margin-top: 20px;
+}
+
+.imgHeader {
+  width: 122px;
+  height: 62px;
+  margin: 30px auto 40px;
+}
+
+.textFont {
+  width: 100%;
+  height: 64px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.textFont span {
+  color: red;
+}
+
+.btntitle {
+  margin: 10px auto;
+  width: 360px;
+  height: 51px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btntitle div {
+  width: 160px;
+  height: 51px;
+  cursor: pointer;
+}
+
+.btntitle div:active {
+  opacity: 0.5;
+}
+
+.btntitle div:nth-child(1) {
+  background-image: url("../assets/btn_pj.png");
+}
+
+.btntitle div:nth-child(2) {
+  background-image: url("../assets/btn_qx.png");
+}
+
+.pol_1 {
+  background-image: url('/images/p_1.png')
+}
+
+.pol_2 {
+  background-image: url('/images/p_2.png')
+}
+
+.pol_3 {
+  background-image: url('/images/p_3.png')
+}
+
+.pol_4 {
+  background-image: url('/images/p_4.png')
 }
 </style>

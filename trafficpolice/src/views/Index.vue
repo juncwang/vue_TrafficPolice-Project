@@ -5,8 +5,9 @@
     <template v-else-if="statusPage[statusIndex] == 'features'">
       <weather :district="amap.area.district"></weather>
       <selectStatus @setStatus="setStatus($event)"></selectStatus>
-      <menuSelect @Logout="Logout($event)"></menuSelect>
+      <menuSelect @Logout="Logout($event)" @openPolDetailed="openPolDetailed"></menuSelect>
       <polList ref="polListVal" v-show="!isStatus"></polList>
+      <polDetailed v-if="isclosePolDetailed" @closePolDetailed="closePolDetailed"></polDetailed>
     </template>
   </div>
 </template>
@@ -19,6 +20,7 @@ import Weather from "../components/Weather";
 import SelectStatus from "../components/SelectStatus";
 import MenuSelect from "../components/MenuSelect";
 import PolList from "../components/PolList";
+import PolDetailed from "../components/PolDetailed";
 
 import roadConfig from "../roadConfig";
 
@@ -29,10 +31,12 @@ export default {
     weather: Weather,
     selectStatus: SelectStatus,
     menuSelect: MenuSelect,
-    polList: PolList
+    polList: PolList,
+    polDetailed: PolDetailed
   },
   data() {
     return {
+      isclosePolDetailed: false,
       description: [],
       polListVal: null,
       statusPage: ["login", "features"],
@@ -61,6 +65,7 @@ export default {
       isStatus: true,
       updataTime: 60000,
       timeObject: null,
+      rotTime: null,
       markerCar: [],
       markerPol: []
     };
@@ -78,7 +83,15 @@ export default {
     this.polListVal = this.$refs.polListVal;
   },
   methods: {
+    openPolDetailed() {
+      this.isStatus = true
+      this.isclosePolDetailed = true;
+    },
+    closePolDetailed() {
+      this.isclosePolDetailed = false;
+    },
     setStatus(status) {
+      this.closePolDetailed()
       this.isStatus = status;
       clearInterval(this.timeObject);
       this.map.remove(this.markerCar);
@@ -128,7 +141,8 @@ export default {
           // this.map.remove(this.markerCar);
           // this.map.remove(this.markerPol);
           clearInterval(this.timeObject);
-          this.map.destroy()
+          clearInterval(this.rotTime);
+          this.map.destroy();
           this.$router.push("/detailsts/" + num + "/" + status);
         });
       })(num, status);
@@ -272,7 +286,7 @@ export default {
 
       this.map = map;
 
-      setInterval(() => {
+      this.rotTime = setInterval(() => {
         if (this.amap.bRot) {
           this.initMapRot(map);
         }

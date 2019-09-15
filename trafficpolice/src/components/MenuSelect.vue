@@ -18,7 +18,7 @@ export default {
             this.isSelect = !this.isSelect
         },
         clickPol(){
-            console.log('等待设计中 ... ...')
+            this.$emit("openPolDetailed")
         },
         clickLogout() {
             this.$emit('Logout', 0)
