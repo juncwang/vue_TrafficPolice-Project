@@ -113,9 +113,9 @@ export default {
         area: {
           district: "九龙坡区",
           fillOpacity: 0.1,
-          fillColor: "#000",
+          fillColor: "#fff",
           strokeWeight: 5,
-          strokeColor: "#000"
+          strokeColor: "#fff"
         },
         rotSpeed: 0.05,
         bRot: true

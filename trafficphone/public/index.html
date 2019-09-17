@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <link rel="stylesheet" href="./reset.css" />
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=eaa48063c9248e479366493d561e3273&plugin=AMap.DistrictSearch,AMap.Driving"></script>
+    <script src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+      }
+      .pol-add {
+        width: 280px;
+        height: 210px;
+        background-image: url('/amap_title.png');
+        background-repeat: no-repeat;
+        background-size: 280px auto;
+      }
+    </style>
+    <title>trafficphone</title>
+  </head>
+  <body>
+    <noscript>
+      <strong
+        >We're sorry but trafficphone doesn't work properly without JavaScript
+        enabled. Please enable it to continue.</strong
+      >
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
