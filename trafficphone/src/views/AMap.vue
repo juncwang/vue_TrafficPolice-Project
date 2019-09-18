@@ -17,6 +17,7 @@ export default {
       isShowMarker: false,
       map: null,
       marker: null,
+      startPos: [],
       amap: {
         id: "amap",
         center: [106.526073, 29.508301],
@@ -39,7 +40,6 @@ export default {
     this.map.setFeatures(this.amap.features);
 
     if (this.$store.state.isNav) {
-      console.log('driving')
       AMap.plugin("AMap.Driving", () => {
         var driving = new AMap.Driving({
           // 驾车路线规划策略，AMap.DrivingPolicy.LEAST_TIME是最快捷模式
@@ -54,9 +54,57 @@ export default {
           // 未出错时，result即是对应的路线规划方案
         });
       });
+      // this.getPoint();
     }
+
+    
   },
   methods: {
+    // 实现获取浏览器当前位置并导航 -- 获取位置速度很慢
+    getPoint() {
+      let that = this;
+      AMap.plugin("AMap.Geolocation", () => {
+        var geolocation = new AMap.Geolocation({
+          enableHighAccuracy: true, //是否使用高精度定位，默认:true
+          timeout: 10000, //超过10秒后停止定位，默认：5s
+          buttonPosition: "RB", //定位按钮的停靠位置
+          buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+          zoomToAccuracy: true //定位成功后是否自动调整地图视野到定位点
+        });
+        this.map.addControl(geolocation);
+        geolocation.getCurrentPosition(function(status, result) {
+          if (status == "complete") {
+            // console.log(result)
+            that.startPos = [];
+            that.startPos.push(result.position.P);
+            that.startPos.push(result.position.Q);
+
+            let other = that
+
+            console.log('hello')
+
+            AMap.plugin("AMap.Driving", () => {
+              var driving = new AMap.Driving({
+                // 驾车路线规划策略，AMap.DrivingPolicy.LEAST_TIME是最快捷模式
+                policy: AMap.DrivingPolicy.LEAST_TIME,
+                map: other.map
+              });
+
+              var startLngLat = [that.startPos[1], that.startPos[0]];
+              var endLngLat = [106.526073, 29.508301];
+
+              console.log(startLngLat)
+
+              driving.search(startLngLat, endLngLat, function(status, result) {
+                // 未出错时，result即是对应的路线规划方案
+                console.log(status, result)
+              });
+            });
+          } else {
+          }
+        });
+      });
+    },
     clickJJ() {
       this.$router.push("/navstart");
       this.map.destroy();
